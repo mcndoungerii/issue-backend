@@ -12,30 +12,12 @@ const router = express.Router();
 app.use(cors());
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb://[server]/issues');
+mongoose.connect('mongodb://localhost/issues');
 
 const connection = mongoose.connection;
 
 connection.once('open', () => {
     console.log('MongoDB database connection established successfully!');
-});
-
-router.route('/issues').get((req, res) => {
-    Issue.find((err, issues) => {
-        if (err)
-            console.log(err);
-        else
-            res.json(issues);    
-    });
-});
-
-router.route('/issues/:id').get((req, res) => {
-    Issue.findById(req.params.id, (err, issue) => {
-        if (err)
-            console.log(err);
-        else
-            res.json(issue);
-    })
 });
 
 router.route('/issues/add').post((req, res) => {
@@ -49,10 +31,28 @@ router.route('/issues/add').post((req, res) => {
         });
 });
 
+router.route('/issues').get((req, res) => {
+    Issue.find((err, issues) => {
+        if (err)
+            console.log(err);
+        else
+            res.json(issues);
+    });
+});
+
+router.route('/issues/:id').get((req, res) => {
+    Issue.findById(req.params.id, (err, issue) => {
+        if (err)
+            console.log(err);
+        else
+            res.json(issue);
+    })
+});
+
 router.route('/issues/update/:id').post((req, res) => {
     Issue.findById(req.params.id, (err, issue) => {
         if (!issue)
-            return next (new Error('Could not load Document'));
+            return next(new Error('Could not load Document'));
         else {
             issue.title = req.body.title;
             issue.responsible = req.body.responsible;
@@ -65,7 +65,7 @@ router.route('/issues/update/:id').post((req, res) => {
             }).catch(err => {
                 res.status(400).send('Update failed');
             });
-        }    
+        }
     });
 });
 
@@ -73,11 +73,11 @@ router.route('/issues/delete/:id').get((req, res) => {
     Issue.findByIdAndRemove({_id: req.params.id}, (err, issue) => {
         if (err)
             res.json(err);
-        else 
-            res.json('Removed successfully');    
+        else
+            res.json('Removed successfully');
     });
 });
 
 app.use('/', router);
 
-app.listen(4000, () => console.log(`Express Server is running on port 4000`));
+app.listen(4000, () => console.log(`Express server running on port 4000`));
