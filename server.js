@@ -8,12 +8,10 @@ import Issue from './models/Issue';
 const app = express();
 const router = express.Router();
 
-
 app.use(cors());
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb://localhost/issues');
-
+mongoose.connect('mongodb://localhost:27017/issues');
 const connection = mongoose.connection;
 
 connection.once('open', () => {
@@ -59,7 +57,6 @@ router.route('/issues/update/:id').post((req, res) => {
             issue.description = req.body.description;
             issue.severity = req.body.severity;
             issue.status = req.body.status;
-
             issue.save().then(issue => {
                 res.json('Update done');
             }).catch(err => {
@@ -79,5 +76,4 @@ router.route('/issues/delete/:id').get((req, res) => {
 });
 
 app.use('/', router);
-
 app.listen(4000, () => console.log(`Express server running on port 4000`));
